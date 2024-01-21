@@ -22,6 +22,8 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  var userQuestion = '';
+  var userAnswer = '';
   final List<String> buttons = [
     "C",
     "DEL",
@@ -51,7 +53,37 @@ class _HomePageState extends State<HomePage> {
       body: Column(
         children: <Widget>[
           Expanded(
-            child: Container(),
+            child: Container(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  SizedBox(
+                    height: 50,
+                  ),
+                  Container(
+                    padding: EdgeInsets.all(20),
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      userQuestion,
+                      style: TextStyle(
+                        fontSize: 20,
+                      ),
+                    ),
+                  ),
+                  Container(
+                    padding: EdgeInsets.all(20),
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                      userAnswer,
+                      style: TextStyle(
+                        fontSize: 20,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
           Expanded(
             flex: 2,
@@ -60,25 +92,48 @@ class _HomePageState extends State<HomePage> {
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 4),
                 itemBuilder: (BuildContext context, int index) {
+                  //Clear Button
                   if (index == 0) {
                     return MyButton(
+                      buttonTapped: () {
+                        setState(() {
+                          userQuestion = "";
+                        });
+                      },
                       buttonText: buttons[index],
                       color: Color.fromARGB(255, 13, 248, 174),
                       textcolor: Colors.white,
                     );
-                  } else if (index == 1) {
+                  }
+                  // Delete Button
+                  else if (index == 1) {
                     return MyButton(
+                      buttonTapped: () {
+                        setState(() {
+                          userQuestion = userQuestion.substring(
+                              0, userQuestion.length - 1);
+                        });
+                      },
                       buttonText: buttons[index],
                       color: const Color.fromARGB(255, 245, 94, 84),
                       textcolor: Colors.white,
                     );
-                  } else {
+                  }
+                  // Rest of the buttons
+                  else {
                     return MyButton(
+                      buttonTapped: () {
+                        setState(() {
+                          userQuestion += buttons[index];
+                        });
+                      },
                       buttonText: buttons[index],
                       color: isOperator(buttons[index])
                           ? const Color.fromARGB(255, 130, 71, 240)
-                          : Color.fromARGB(255, 178, 134, 243),
-                      textcolor: Colors.white,
+                          : Color.fromARGB(255, 250, 239, 255),
+                      textcolor: isOperator(buttons[index])
+                          ? Colors.white
+                          : Colors.deepPurple,
                     );
                   }
                 }),
