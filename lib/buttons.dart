@@ -6,7 +6,12 @@ class MyButton extends StatelessWidget {
   final String buttonText;
   final buttonTapped;
 
-  MyButton({this.color, this.textcolor, required this.buttonText,this.buttonTapped});
+  MyButton({
+    this.color,
+    this.textcolor,
+    required this.buttonText,
+    required this.buttonTapped,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -29,4 +34,9 @@ class MyButton extends StatelessWidget {
       ),
     );
   }
+
+  static const Color clearButtonColor = Color.fromARGB(255, 13, 248, 174);
+  static const Color deleteButtonColor = Color.fromARGB(255, 245, 94, 84);
+  static const Color operatorButtonColor = Color.fromARGB(255, 130, 71, 240);
+  static const Color digitButtonColor = Color.fromARGB(255, 250, 239, 255);
 }

@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:new_project/buttons.dart';
+import 'package:math_expressions/math_expressions.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +47,7 @@ class _HomePageState extends State<HomePage> {
     "ANS",
     "=",
   ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -62,7 +64,7 @@ class _HomePageState extends State<HomePage> {
                     height: 50,
                   ),
                   Container(
-                    padding: EdgeInsets.all(20),
+                    padding: EdgeInsets.all(16),
                     alignment: Alignment.centerLeft,
                     child: Text(
                       userQuestion,
@@ -72,7 +74,7 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   Container(
-                    padding: EdgeInsets.all(20),
+                    padding: EdgeInsets.all(16),
                     alignment: Alignment.centerRight,
                     child: Text(
                       userAnswer,
@@ -88,55 +90,70 @@ class _HomePageState extends State<HomePage> {
           Expanded(
             flex: 2,
             child: GridView.builder(
-                itemCount: buttons.length,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 4),
-                itemBuilder: (BuildContext context, int index) {
-                  //Clear Button
-                  if (index == 0) {
-                    return MyButton(
-                      buttonTapped: () {
-                        setState(() {
-                          userQuestion = "";
-                        });
-                      },
-                      buttonText: buttons[index],
-                      color: Color.fromARGB(255, 13, 248, 174),
-                      textcolor: Colors.white,
-                    );
-                  }
-                  // Delete Button
-                  else if (index == 1) {
-                    return MyButton(
-                      buttonTapped: () {
-                        setState(() {
-                          userQuestion = userQuestion.substring(
-                              0, userQuestion.length - 1);
-                        });
-                      },
-                      buttonText: buttons[index],
-                      color: const Color.fromARGB(255, 245, 94, 84),
-                      textcolor: Colors.white,
-                    );
-                  }
-                  // Rest of the buttons
-                  else {
-                    return MyButton(
-                      buttonTapped: () {
-                        setState(() {
-                          userQuestion += buttons[index];
-                        });
-                      },
-                      buttonText: buttons[index],
-                      color: isOperator(buttons[index])
-                          ? const Color.fromARGB(255, 130, 71, 240)
-                          : Color.fromARGB(255, 250, 239, 255),
-                      textcolor: isOperator(buttons[index])
-                          ? Colors.white
-                          : Colors.deepPurple,
-                    );
-                  }
-                }),
+              itemCount: buttons.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 4,
+              ),
+              itemBuilder: (BuildContext context, int index) {
+                //Clear Button
+                if (index == 0) {
+                  return MyButton(
+                    buttonTapped: () {
+                      setState(() {
+                        userQuestion = "";
+                      });
+                    },
+                    buttonText: buttons[index],
+                    color: MyButton.clearButtonColor,
+                    textcolor: Colors.white,
+                  );
+                }
+                // Equal button
+                else if (index == buttons.length - 1) {
+                  return MyButton(
+                    buttonTapped: () {
+                      setState(() {
+                        equalPressed();
+                      });
+                    },
+                    buttonText: buttons[index],
+                    color: MyButton.deleteButtonColor,
+                    textcolor: Colors.white,
+                  );
+                }
+                // Delete Button
+                else if (index == 1) {
+                  return MyButton(
+                    buttonTapped: () {
+                      setState(() {
+                        userQuestion = userQuestion.substring(
+                            0, userQuestion.length - 1);
+                      });
+                    },
+                    buttonText: buttons[index],
+                    color: MyButton.deleteButtonColor,
+                    textcolor: Colors.white,
+                  );
+                }
+                // Rest of the buttons
+                else {
+                  return MyButton(
+                    buttonTapped: () {
+                      setState(() {
+                        userQuestion += buttons[index];
+                      });
+                    },
+                    buttonText: buttons[index],
+                    color: isOperator(buttons[index])
+                        ? MyButton.operatorButtonColor
+                        : MyButton.digitButtonColor,
+                    textcolor: isOperator(buttons[index])
+                        ? Colors.white
+                        : Colors.deepPurple,
+                  );
+                }
+              },
+            ),
           ),
         ],
       ),
@@ -148,5 +165,25 @@ class _HomePageState extends State<HomePage> {
       return true;
     }
     return false;
+  }
+
+  void equalPressed() {
+    String finalQuestion = userQuestion;
+    finalQuestion = finalQuestion.replaceAll('x', '*');
+
+    // Check for division by zero
+    if (!finalQuestion.contains('/') || !finalQuestion.endsWith('/0')) {
+      Parser p = Parser();
+      Expression exp = p.parse(finalQuestion);
+      ContextModel cm = ContextModel();
+      try {
+        double eval = exp.evaluate(EvaluationType.REAL, cm);
+        userAnswer = eval.toString();
+      } catch (e) {
+        userAnswer = 'Error';
+      }
+    } else {
+      userAnswer = 'Error';
+    }
   }
 }
